@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seeing the Extraordinary in the Ordinary</title>
+<style>
+:root{
+  --green:#1D9E75;--green-d:#0F6E56;--green-l:#E1F5EE;--green-deep:#085041;
+  --red:#A32D2D;--red-l:#FCEBEB;--red-deep:#501313;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-deep:#633806;
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-deep:#0C3A6B;
+  --purple:#6B3FA0;--purple-l:#F0EAF9;--purple-deep:#2E1248;
+  --bg:#F5F3EF;--card:#FFFFFF;--border:rgba(0,0,0,0.08);
+  --text:#1a1a1a;--muted:#666;--hint:#aaa;--r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+#app{max-width:700px;margin:0 auto;padding:24px 16px 60px;}
+.intro-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:2.5rem 2rem;text-align:center;margin-top:16px;}
+.intro-logo{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:18px;}
+.intro-title{font-size:26px;font-weight:800;line-height:1.3;margin-bottom:6px;}
+.intro-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
+.type-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.info-card{background:var(--bg);border-radius:var(--rs);padding:14px 8px;text-align:center;}
+.info-num{font-size:22px;font-weight:800;color:var(--green);}
+.info-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+.time-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;}
+.time-card{background:var(--bg);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;gap:8px;}
+.time-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.time-lbl{font-size:12px;color:var(--muted);}
+.time-val{font-size:13px;font-weight:700;}
+.start-btn{width:100%;padding:16px;font-size:16px;font-weight:800;font-family:inherit;background:var(--green);color:#fff;border:none;border-radius:var(--r);cursor:pointer;transition:background .15s,transform .1s;}
+.start-btn:hover{background:var(--green-d);}
+.start-btn:active{transform:scale(.98);}
+.type-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:800;}
+.tb-g{background:var(--blue-l);color:var(--blue-deep);}
+.tb-b{background:var(--purple-l);color:var(--purple-deep);}
+.tb-o{background:var(--amber-l);color:var(--amber-deep);}
+.hd-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.quiz-counter{font-size:13px;font-weight:700;color:var(--muted);}
+.cutline-chip{font-size:12px;font-weight:700;color:var(--green-deep);background:var(--green-l);padding:3px 10px;border-radius:99px;}
+.progress-wrap{height:5px;background:#DDD;border-radius:99px;overflow:hidden;margin-bottom:12px;}
+.progress-fill{height:5px;background:var(--green);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.timer-row{display:flex;justify-content:flex-end;margin-bottom:12px;}
+.timer-block{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.timer-lbl{font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;}
+.timer-ring{position:relative;width:52px;height:52px;}
+.timer-ring svg{transform:rotate(-90deg);}
+.timer-ring circle{fill:none;stroke-width:4;}
+.ring-bg{stroke:#E0E0E0;}
+.ring-fill{stroke:var(--green);stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .4s;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--text);}
+.tw .ring-fill{stroke:var(--amber);}.tw .timer-num{color:var(--amber);}
+.td .ring-fill{stroke:var(--red);}.td .timer-num{color:var(--red);}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.td .timer-ring{animation:pulse .8s infinite;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px;animation:fadeUp .22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.q-num{font-size:11px;color:var(--hint);margin-bottom:8px;}
+.q-en{font-size:15px;line-height:2;margin-bottom:14px;color:var(--text);}
+.q-sub{font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.7;}
+.blank-tag{font-weight:800;font-size:14px;color:var(--blue);background:var(--blue-l);padding:2px 8px;border-radius:5px;margin:0 2px;}
+.choices{display:flex;gap:8px;flex-wrap:wrap;}
+.choice-btn{flex:1;min-width:90px;padding:11px 12px;font-size:14px;font-family:inherit;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-weight:600;transition:all .12s;}
+.choice-btn:hover:not(:disabled){border-color:var(--green);background:var(--green-l);color:var(--green-deep);}
+.choice-btn.correct{background:var(--green-l);border-color:var(--green);color:var(--green-deep);font-weight:800;}
+.choice-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red-deep);}
+.choice-btn:disabled{cursor:default;}
+.blank-input-wrap{display:flex;gap:8px;}
+.blank-input{flex:1;padding:11px 13px;font-size:15px;font-family:inherit;border:1.5px solid #CCC;border-radius:var(--rs);background:#FAFAFA;color:var(--text);outline:none;transition:border-color .15s;}
+.blank-input:focus{border-color:var(--purple);background:#fff;}
+.blank-input.correct{border-color:var(--green);background:var(--green-l);color:var(--green-deep);}
+.blank-input.wrong{border-color:var(--red);background:var(--red-l);color:var(--red-deep);}
+.submit-btn{padding:11px 16px;font-size:14px;font-weight:700;font-family:inherit;background:var(--purple);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;white-space:nowrap;}
+.submit-btn:hover{background:var(--purple-deep);}
+.answer-reveal{margin-top:10px;padding:9px 13px;border-radius:var(--rs);font-size:13px;font-weight:600;}
+.ar-ok{background:var(--green-l);color:var(--green-deep);}
+.ar-ng{background:var(--red-l);color:var(--red-deep);}
+.order-area-lbl{font-size:11px;color:var(--hint);margin-bottom:6px;font-weight:700;text-transform:uppercase;}
+.order-area{min-height:50px;border:2px dashed #DDD;border-radius:var(--rs);padding:8px 10px;display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;align-items:center;}
+.order-area.filled{border-color:var(--amber);background:var(--amber-l);}
+.word-chip{padding:7px 13px;font-size:14px;font-weight:600;border-radius:99px;cursor:pointer;transition:all .14s;user-select:none;white-space:nowrap;}
+.wc-avail{background:var(--card);border:1.5px solid var(--border);color:var(--text);}
+.wc-avail:hover{border-color:var(--amber);background:var(--amber-l);color:var(--amber-deep);}
+.wc-placed{background:var(--amber-l);border:1.5px solid var(--amber);color:var(--amber-deep);}
+.order-check-btn{width:100%;padding:12px;font-size:14px;font-weight:800;font-family:inherit;background:var(--amber);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;margin-top:6px;}
+.order-check-btn:hover:not(:disabled){background:var(--amber-deep);}
+.order-check-btn:disabled{background:#CCC;cursor:default;}
+.timeout-msg{margin-top:10px;padding:10px 14px;border-radius:var(--rs);font-size:13px;font-weight:600;background:var(--amber-l);color:var(--amber-deep);border:1px solid #FAC775;}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:30px 22px;text-align:center;margin-bottom:14px;}
+.result-emoji{font-size:46px;margin-bottom:10px;}
+.result-score{font-size:54px;font-weight:800;line-height:1;margin-bottom:8px;}
+.score-pass{color:var(--green);}.score-fail{color:var(--red);}
+.result-badge{display:inline-block;padding:5px 16px;border-radius:99px;font-size:14px;font-weight:800;margin-bottom:8px;}
+.badge-pass{background:var(--green-l);color:var(--green-deep);}
+.badge-fail{background:var(--red-l);color:var(--red-deep);}
+.result-pct{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.stat-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.stat-card{background:var(--bg);border-radius:var(--rs);padding:12px 16px;}
+.stat-num{font-size:22px;font-weight:800;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.s-ok{color:var(--green);}.s-ng{color:var(--red);}.s-to{color:var(--amber);}
+.retry-btn{width:100%;padding:14px;font-size:15px;font-weight:800;font-family:inherit;background:var(--green);color:#fff;border:none;border-radius:var(--r);cursor:pointer;transition:background .15s,transform .1s;}
+.retry-btn:hover{background:var(--green-d);}
+.retry-btn:active{transform:scale(.98);}
+.review-title{font-size:14px;font-weight:800;margin-bottom:10px;margin-top:14px;}
+.review-item{background:var(--card);border:1px solid #F09595;border-radius:var(--rs);padding:13px 15px;margin-bottom:8px;}
+.review-item.to{border-color:#FAC775;}
+.r-num{font-size:11px;color:var(--hint);margin-bottom:6px;}
+.r-en{font-size:13px;color:var(--text);margin-bottom:8px;line-height:1.8;}
+.tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;margin-right:4px;margin-top:2px;}
+.tag-ng{background:var(--red-l);color:var(--red-deep);}
+.tag-ok{background:var(--green-l);color:var(--green-deep);}
+.tag-to{background:var(--amber-l);color:var(--amber-deep);}
+.hist-section{margin-top:20px;}
+.hist-title{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.hist-clear{font-size:11px;font-weight:600;color:var(--red);background:none;border:none;cursor:pointer;}
+.hist-empty{font-size:13px;color:var(--hint);text-align:center;padding:20px 0;}
+.hist-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.hist-item:hover{border-color:var(--green);}
+.hist-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.hist-left{flex:1;}
+.hist-date{font-size:11px;color:var(--hint);margin-bottom:4px;}
+.hist-score{font-size:18px;font-weight:800;}
+.hist-score.pass{color:var(--green);}.hist-score.fail{color:var(--red);}
+.hist-pct{font-size:12px;color:var(--muted);margin-top:2px;}
+.hist-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;}
+.hb-pass{background:var(--green-l);color:var(--green-deep);}
+.hb-fail{background:var(--red-l);color:var(--red-deep);}
+.hist-bar-wrap{width:80px;height:6px;background:#E0E0E0;border-radius:99px;overflow:hidden;margin-top:4px;}
+.hist-bar{height:6px;border-radius:99px;}
+.hist-detail{margin-top:12px;border-top:1px solid var(--border);padding-top:10px;display:none;}
+.hist-detail.open{display:block;}
+.hd-item{background:var(--bg);border-radius:var(--rs);padding:10px 12px;margin-bottom:6px;}
+.hd-item.hd-to{border-left:3px solid var(--amber);}
+.hd-item.hd-ng{border-left:3px solid var(--red);}
+.hd-qnum{font-size:10px;color:var(--hint);margin-bottom:4px;}
+.hd-en{font-size:12px;line-height:1.7;margin-bottom:5px;}
+.hd-tags{display:flex;flex-wrap:wrap;gap:4px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const ALL_Q = [
+  {n:'1',t:'w',prev:'Seeing the Extraordinary in the Ordinary',en:'When you hear this word, what _____ pops into your mind?',ws:['immediately','instantly','gradually'],a:'gradually'},
+  {n:'2',t:'b',prev:'Creativity. When you hear this word, what gradually',en:'When you hear this word, what gradually _____ _____ _____ _____?',a:'pops into your mind'},
+  {n:'3',t:'g',prev:'Creativity. When you hear this word, what gradually pops into your mind?',en:'You may think it is a quality [A] only artists and writers possess.',blanks:[{l:'[A]',c:['what','that'],a:'that'}]},
+  {n:'4',t:'g',prev:'You may think it is a quality that only artists and writers possess—some special talent you are',en:'Some special talent you are [A] born with or without.',blanks:[{l:'[A]',c:['both','either'],a:'either'}]},
+  {n:'5',t:'o',prev:'Many people accept the idea that we can be divided into two groups:',ko:'많은 사람들이 우리가 두 그룹들로 나뉠 수 있다는 생각을 받아들인다.',en:'_____: those who are creative and those who are not.',ws:['Many people','accept the idea','that','we can be divided','into two groups'],a:'Many people accept the idea that we can be divided into two groups'},
+  {n:'6',t:'g',prev:'Many people accept the idea that we can be divided into two groups:',en:'Many people accept the idea that we can be divided into two groups, those [A] are creative and those who are not.',blanks:[{l:'[A]',c:['who','what'],a:'who'}]},
+  {n:'7',t:'g',prev:'Many people accept the idea that we can be divided into two groups: those who',en:'Those who [A] creative and those who are not.',blanks:[{l:'[A]',c:['is','are'],a:'are'}]},
+  {n:'8',t:'w',prev:'Many people accept the idea that we can be divided into two groups: those who are creative and those who are not.',en:'This _____ belief, however, is far from the truth.',ws:['typical','standard','normal','extraordinary','common'],a:'extraordinary'},
+  {n:'9',t:'g',prev:'This extraordinary belief, however,',en:'This extraordinary belief, however, [A] far from the truth.',blanks:[{l:'[A]',c:['is','are'],a:'is'}]},
+  {n:'10',t:'b',prev:'This extraordinary belief, however, is',en:'This extraordinary belief, however, is _____ _____ the truth.',a:'far from'},
+  {n:'11',t:'o',prev:'This extraordinary belief, however, is far from the truth.',ko:'모든 사람들은 창의적이 될 능력을 가지고 있다.',en:'_____.',ws:['to be','has','creative','everyone','the ability'],a:'Everyone has the ability to be creative'},
+  {n:'12',t:'o',prev:'Everyone has the ability to be creative.',ko:'자신 안의 창의성을 찾는 것은 약간의 노력만 필요할 뿐이다.',en:'_____.',ws:['just takes','finding','a little','yourself','effort','creativity','inside'],a:'Finding creativity inside yourself just takes a little effort'},
+  {n:'13',t:'g',prev:'This extraordinary belief, however, is far from the truth.',en:'Some artists, [A], spark their creativity by looking closely at ordinary objects.',blanks:[{l:'[A]',c:['however','for example'],a:'for example'}]},
+  {n:'14',t:'o',prev:'Some artists, for example, spark their creativity',ko:'평범한 사물들을 자세히 관찰함으로써',en:'Some artists spark their creativity _____, trying to discover the beauty hidden within these common objects.',ws:['by','looking closely','at ordinary objects'],a:'by looking closely at ordinary objects'},
+  {n:'15',t:'g',prev:'Some artists, for example, spark their creativity by looking closely at ordinary objects.',en:'They try to discover the beauty [A] within these common objects.',blanks:[{l:'[A]',c:['hiding','hidden'],a:'hidden'}]},
+  {n:'16',t:'b',prev:'They try to discover the beauty hidden within these common objects and then',en:'They try to discover the beauty hidden within these common objects and then _____ them _____ works of art.',a:'turn / into'},
+  {n:'17',t:'g',prev:'Giuseppe Arcimboldo',en:'[A] at these two paintings.',blanks:[{l:'[A]',c:['Look','Looking'],a:'Look'}]},
+  {n:'18',t:'b',prev:'Look at these two paintings.',en:'_____ _____ _____ _____, they both depict the same person, Holy Roman Emperor Rudolf II.',a:'Believe it or not'},
+  {n:'19',t:'g',prev:'Believe it or not, they both depict the same person, Holy Roman Emperor Rudolf II.',en:'The one on the left might look [A], as it is a standard style of portrait that you would see in a gallery or an art book.',blanks:[{l:'[A]',c:['familiar','strange'],a:'familiar'}]},
+  {n:'20',t:'g',prev:'The one on the left might look familiar, as it is a standard style of portrait',en:'It is a standard style of portrait [A] you would see in a gallery or an art book.',blanks:[{l:'[A]',c:['what','that'],a:'that'}]},
+  {n:'21',t:'g',prev:'The one on the left might look familiar, as it is a standard style of portrait that you would see in a gallery or an art book.',en:'[A], the one on the right, called Vertumnus, is very unconventional.',blanks:[{l:'[A]',c:['However','Therefore'],a:'However'}]},
+  {n:'22',t:'g',prev:'However, the one on the right,',en:'The one on the right, [A] Vertumnus, is very unconventional.',blanks:[{l:'[A]',c:['calling','called'],a:'called'}]},
+  {n:'23',t:'g',prev:'However, the one on the right, called Vertumnus,',en:'The one on the right, called Vertumnus, [A] very unconventional.',blanks:[{l:'[A]',c:['is','are'],a:'is'}]},
+  {n:'24',t:'g',prev:'However, the one on the right, called Vertumnus, is very',en:'The one on the right, called Vertumnus, is very [A].',blanks:[{l:'[A]',c:['conventional','unconventional'],a:'unconventional'}]},
+  {n:'25',t:'g',prev:'However, the one on the right, called Vertumnus, is very unconventional.',en:'[A] by a 16th-century Italian painter named Giuseppe Arcimboldo, the painting shows striking creativity and originality.',blanks:[{l:'[A]',c:['Creating','Created'],a:'Created'}]},
+  {n:'26',t:'g',prev:'Created by a 16th-century Italian painter',en:'Created by a 16th-century Italian painter [A] Giuseppe Arcimboldo, the painting shows striking creativity and originality.',blanks:[{l:'[A]',c:['naming','named'],a:'named'}]},
+  {n:'27',t:'w',prev:'Created by a 16th-century Italian painter named Giuseppe Arcimboldo, the painting shows',en:'The painting shows _____ creativity and originality.',ws:['marked','striking','notable','unremarkable'],a:'unremarkable'},
+  {n:'28',t:'g',prev:'Created by a 16th-century Italian painter named Giuseppe Arcimboldo, the painting shows striking creativity and originality.',en:'Fruits, flowers, and vegetables [A] like the pieces of a puzzle to create a human head.',blanks:[{l:'[A]',c:['arrange','are arranged'],a:'are arranged'}]},
+  {n:'29',t:'g',prev:'Fruits, flowers, and vegetables are arranged like the pieces of a puzzle',en:'Fruits, flowers, and vegetables are arranged like the pieces of a puzzle to [A] a human head.',blanks:[{l:'[A]',c:['create','creating'],a:'create'}]},
+  {n:'30',t:'b',prev:'Fruits, flowers, and vegetables are arranged like the pieces of a puzzle to create a human head.',en:'This painting is _____ _____ the artist\'s signature style of composite portraits.',a:'representative of'},
+  {n:'31',t:'b',prev:'This painting is representative of the artist\'s signature style of',en:'This painting is representative of the artist\'s signature style of _____ portraits.',a:'composite'},
+  {n:'32',t:'g',prev:'This painting is representative of the artist\'s signature style of composite portraits.',en:'He used plants, animals, and [A] objects to create many other portraits like this.',blanks:[{l:'[A]',c:['another','other'],a:'other'}]},
+  {n:'33',t:'g',prev:'He used plants, animals, and other objects to',en:'He used plants, animals, and other objects to [A] many other portraits like this.',blanks:[{l:'[A]',c:['create','creating'],a:'create'}]},
+  {n:'34',t:'g',prev:'He used plants, animals, and other objects to create many other portraits like this.',en:'Another good example of Arcimboldo\'s [A] creativity can be found in The Gardener.',blanks:[{l:'[A]',c:['common','unique'],a:'unique'}]},
+  {n:'35',t:'g',prev:'Another good example of Arcimboldo\'s unique creativity',en:'Another good example of Arcimboldo\'s unique creativity can [A] in The Gardener.',blanks:[{l:'[A]',c:['find','be found'],a:'be found'}]},
+  {n:'36',t:'g',prev:'Another good example of Arcimboldo\'s unique creativity can be found in The Gardener, one of his reversible paintings.',en:'When [A] normally, it is just an ordinary still life of vegetables in a bowl.',blanks:[{l:'[A]',c:['viewing','viewed'],a:'viewed'}]},
+  {n:'37',t:'g',prev:'When viewed normally,',en:'When viewed normally, it is just an [A] still life of vegetables in a bowl.',blanks:[{l:'[A]',c:['ordinary','extraordinary'],a:'ordinary'}]},
+  {n:'38',t:'g',prev:'When viewed normally, it is just an ordinary still life of vegetables in a bowl.',en:'[A], when flipped upside down, it is magically transformed into a smiling face!',blanks:[{l:'[A]',c:['Hence','However'],a:'However'}]},
+  {n:'39',t:'g',prev:'However, when',en:'However, when [A] upside down, it is magically transformed into a smiling face!',blanks:[{l:'[A]',c:['flipping','flipped'],a:'flipped'}]},
+  {n:'40',t:'b',prev:'However, when flipped',en:'However, when flipped _____ _____, it is magically transformed into a smiling face!',a:'upside down'},
+  {n:'41',t:'g',prev:'However, when flipped upside down,',en:'However, when flipped upside down, it is magically [A] into a smiling face!',blanks:[{l:'[A]',c:['transforming','transformed'],a:'transformed'}]},
+  {n:'42',t:'b',prev:'However, when flipped upside down, it is magically transformed into a smiling face! Experts have studied this painting,',en:'Experts have studied this painting, _____ _____ Arcimboldo\'s other reversible ones.',a:'along with'},
+  {n:'43',t:'g',prev:'Experts have studied this painting, along with',en:'Experts have studied this painting, along with Arcimboldo\'s [A] reversible ones.',blanks:[{l:'[A]',c:['other','others'],a:'other'}]},
+  {n:'44',t:'g',prev:'Experts have studied this painting, along with Arcimboldo\'s other reversible ones.',en:'Their research showed [A] he first painted them as still life paintings.',blanks:[{l:'[A]',c:['that','what'],a:'that'}]},
+  {n:'45',t:'g',prev:'Their research showed that he first painted them as still life paintings and then',en:'He first painted them as still life paintings and then [A] them upside down.',blanks:[{l:'[A]',c:['turning','turned'],a:'turned'}]},
+  {n:'46',t:'g',prev:'He first painted them as still life paintings and then turned them',en:'He turned them [A] and made some adjustments to create faces.',blanks:[{l:'[A]',c:['right side up','upside down'],a:'upside down'}]},
+  {n:'47',t:'g',prev:'He turned them upside down and',en:'He turned them upside down and [A] some adjustments to create faces.',blanks:[{l:'[A]',c:['making','made'],a:'made'}]},
+  {n:'48',t:'g',prev:'He made some adjustments to',en:'He made some adjustments to [A] faces.',blanks:[{l:'[A]',c:['creating','create'],a:'create'}]},
+  {n:'49',t:'g',prev:'Their research showed that he first painted them as still life paintings and then turned them upside down and made some adjustments to create faces.',en:'X-ray examination revealed [A] he sometimes changed the positions of some of the fruits and vegetables.',blanks:[{l:'[A]',c:['that','what'],a:'that'}]},
+  {n:'50',t:'o',prev:'Their research showed that he first painted them as still life paintings and then turned them upside down and made some adjustments to create faces.',ko:'왜 그는 자신의 그림들을 뒤집을 수 있게 만들었는가?',en:'_____?',ws:['Why','did he','make his','paintings','reversible'],a:'Why did he make his paintings reversible'},
+  {n:'51',t:'o',prev:'Why did he make his paintings reversible?',ko:'그것은 아마도 그렇게 함으로써 그가 자신의 작품에 상호작용적 요소를 더하고 싶었기 때문일 것이다.',en:'_____.',ws:['It was probably','because he wanted','to add an interactive','element to his work','by doing so'],a:'It was probably because he wanted to add an interactive element to his work by doing so'},
+  {n:'52',t:'g',prev:'Why did he make his paintings reversible? It was probably because he wanted to add an interactive element to his work by doing so.',en:'Viewers feel [A] they are playing a visual game.',blanks:[{l:'[A]',c:['as if','even if'],a:'as if'}]},
+  {n:'53',t:'g',prev:'Viewers feel as if they are',en:'Viewers feel as if they are [A] a visual game.',blanks:[{l:'[A]',c:['playing','played'],a:'playing'}]},
+  {n:'54',t:'g',prev:'Viewers feel as if they are playing a visual game,',en:'Viewers feel as if they are playing a visual game, [A] brings them a sense of pleasure.',blanks:[{l:'[A]',c:['what','which'],a:'which'}]},
+  {n:'55',t:'g',prev:'Viewers feel as if they are playing a visual game, which',en:'Viewers feel as if they are playing a visual game, which [A] them a sense of pleasure.',blanks:[{l:'[A]',c:['bring','brings'],a:'brings'}]},
+  {n:'56',t:'g',prev:'Viewers feel as if they are playing a visual game, which brings them a sense of pleasure.',en:'Each of Arcimboldo\'s [A] is a careful study of everyday objects.',blanks:[{l:'[A]',c:['work','works'],a:'works'}]},
+  {n:'57',t:'g',prev:'Each of Arcimboldo\'s works',en:'Each of Arcimboldo\'s works [A] a careful study of everyday objects.',blanks:[{l:'[A]',c:['is','are'],a:'is'}]},
+  {n:'58',t:'g',prev:'Each of Arcimboldo\'s works is a careful study of everyday objects.',en:'When he looked at [A] objects, such as a bowl of vegetables, he saw the artistic and inventive potential in them.',blanks:[{l:'[A]',c:['typical','unique'],a:'typical'}]},
+  {n:'59',t:'w',prev:'When he looked at typical objects, such as a bowl of vegetables, he saw the artistic and',en:'He saw the artistic and _____ potential in them.',ws:['inventive','dull','imaginative','creative','ingenious'],a:'dull'},
+  {n:'60',t:'g',prev:'When he looked at typical objects, such as a bowl of vegetables, he saw the artistic and inventive potential in them.',en:'His [A] approach to art inspired many great artists who came after him.',blanks:[{l:'[A]',c:['conventional','innovative'],a:'innovative'}]},
+  {n:'61',t:'b',prev:'His innovative approach to art inspired many great artists who',en:'His innovative approach to art inspired many great artists who _____ _____ him, including Pablo Picasso, Salvador Dalí, and René Magritte.',a:'came after'},
+  {n:'62',t:'b',prev:'Helga Stentzel',en:'_____ _____ _____ _____ this picture.',a:'Take a look at'},
+  {n:'63',t:'g',prev:'Take a look at this picture.',en:'Do you see a horse [A] in a field?',blanks:[{l:'[A]',c:['standing','stood'],a:'standing'}]},
+  {n:'64',t:'g',prev:'Do you see a horse standing in a field?',en:'Or is it simply a collection of clothes [A] on a clothesline?',blanks:[{l:'[A]',c:['hanging','hung'],a:'hanging'}]},
+  {n:'65',t:'g',prev:'Or is it simply a collection of clothes hanging on a clothesline?',en:'This witty and [A] creation is actually a work of art created by the visual artist Helga Stentzel.',blanks:[{l:'[A]',c:['amusing','amused'],a:'amusing'}]},
+  {n:'66',t:'g',prev:'This witty and amusing creation is actually a work of art',en:'This witty and amusing creation is actually a work of art [A] by the visual artist Helga Stentzel.',blanks:[{l:'[A]',c:['creating','created'],a:'created'}]},
+  {n:'67',t:'g',prev:'This witty and amusing creation is actually a work of art created by the visual artist Helga Stentzel.',en:'[A] everyday items, she creates playful visual illusions that compel you to look twice.',blanks:[{l:'[A]',c:['Using','Used'],a:'Using'}]},
+  {n:'68',t:'g',prev:'Using everyday items, she creates playful visual illusions',en:'Using everyday items, she creates playful visual illusions [A] compel you to look twice.',blanks:[{l:'[A]',c:['that','what'],a:'that'}]},
+  {n:'69',t:'w',prev:'Using everyday items, she creates playful visual illusions that',en:'Using everyday items, she creates playful visual illusions that _____ you to look twice.',ws:['forbid','compel','force'],a:'forbid'},
+  {n:'70',t:'o',prev:'Using everyday items, she creates playful visual illusions that compel you to look twice',ko:'그것들을 확인하기 위해 방금 본 것을 다시 보도록',en:'she creates playful visual illusions that compel you to look twice _____.',ws:['in order to confirm','what you have','just seen'],a:'in order to confirm what you have just seen'},
+  {n:'71',t:'g',prev:'Using everyday items, she creates playful visual illusions that compel you to look twice in order to confirm what you have just seen.',en:'Her [A] style has been called household surrealism.',blanks:[{l:'[A]',c:['common','unique'],a:'unique'}]},
+  {n:'72',t:'g',prev:'Her unique style has',en:'Her unique style has [A] household surrealism.',blanks:[{l:'[A]',c:['called','been called'],a:'been called'}]},
+  {n:'73',t:'b',prev:'Her unique style has been called household surrealism.',en:'Stentzel is perhaps best _____ _____ her Clothesline Animals series.',a:'known for'},
+  {n:'74',t:'g',prev:'Stentzel is perhaps best known for her Clothesline Animals series.',en:'She got inspiration for the series while she was [A] her laundry.',blanks:[{l:'[A]',c:['hanging','hung'],a:'hanging'}]},
+  {n:'75',t:'o',prev:'She got inspiration for the series while she was hanging her laundry.',ko:'단순히 알록달록한 빨래집게 몇 개와 행주 하나를 추가함으로써',en:'_____, she was able to transform her black sweatshirt and dark grey pants into a horse.',ws:['By simply adding','some colorful clothespins','and a dish towel'],a:'By simply adding some colorful clothespins and a dish towel'},
+  {n:'76',t:'g',prev:'By simply adding some colorful clothespins and a dish towel, she was able to transform her black sweatshirt and dark grey pants into a horse.',en:'[A] creations followed, including a brown cow standing on some hills.',blanks:[{l:'[A]',c:['Another','Other'],a:'Other'}]},
+  {n:'77',t:'g',prev:'Other creations followed, including a brown cow',en:'Other creations followed, including a brown cow [A] on some hills.',blanks:[{l:'[A]',c:['standing','stood'],a:'standing'}]},
+  {n:'78',t:'g',prev:'Other creations followed, including a brown cow standing on some hills and a zebra',en:'And a zebra [A] the desert.',blanks:[{l:'[A]',c:['crossing','crossed'],a:'crossing'}]},
+  {n:'79',t:'g',prev:'Other creations followed, including a brown cow standing on some hills and a zebra crossing the desert.',en:'All of these works were [A] from nothing more than laundry and household items.',blanks:[{l:'[A]',c:['creating','created'],a:'created'}]},
+  {n:'80',t:'b',prev:'All of these works were created from',en:'All of these works were created from _____ _____ _____ laundry and household items.',a:'nothing more than'},
+  {n:'81',t:'o',prev:'All of these works were created from nothing more than laundry and household items.',ko:'Stentzel의 놀라운 창의력이 돋보이는 또 다른 시리즈는 \'먹을 수 있는 존재들\'이다.',en:'_____.',ws:['Another series','that highlights','Stentzel\'s astonishing','creativity','is Edible Creatures'],a:'Another series that highlights Stentzel\'s astonishing creativity is Edible Creatures'},
+  {n:'82',t:'g',prev:'Another series that highlights Stentzel\'s astonishing creativity is Edible Creatures.',en:'For this series, she arranges food items you can find in any kitchen to [A] cute animals.',blanks:[{l:'[A]',c:['create','creating'],a:'create'}]},
+  {n:'83',t:'g',prev:'For this series, she arranges food items you can find in any kitchen to create cute animals.',en:'The stars of the series are Brad Pet and Crunchie, a pair of puppies [A] of sliced bread and lettuce.',blanks:[{l:'[A]',c:['making','made'],a:'made'}]},
+  {n:'84',t:'b',prev:'The stars of the series are Brad Pet and Crunchie, a pair of puppies made of sliced bread and lettuce',en:'The stars of the series are Brad Pet and Crunchie, a pair of puppies made of sliced bread and lettuce _____, respectively.',a:'respectively'},
+  {n:'85',t:'b',prev:'Stentzel says she',en:'Stentzel says she _____ _____ _____ the concept of Crunchie while putting together a salad for her family.',a:'came up with'},
+  {n:'86',t:'b',prev:'Stentzel says she came up with the concept of Crunchie while',en:'Stentzel says she came up with the concept of Crunchie while _____ _____ a salad for her family.',a:'putting together'},
+  {n:'87',t:'o',prev:'Stentzel says she came up with the concept of Crunchie while putting together a salad for her family.',ko:'그녀의 비밀이 무엇이라고 생각하나요?',en:'_____?',ws:['What','do you think','her secret','is'],a:'What do you think her secret is'},
+  {n:'88',t:'o',prev:'What do you think her secret is?',ko:'그녀가 평범함 속에서 마법을 만들게 하는 것은 바로 그녀의 적극적인 관찰 기술들이다.',en:'Stentzel says that _____.',ws:['it is her active','observation skills','that allow her','to make magic','out of the ordinary'],a:'it is her active observation skills that allow her to make magic out of the ordinary'},
+  {n:'89',t:'o',prev:'Stentzel says that it is her active observation skills that allow her to make magic out of the ordinary.',ko:'그녀는 자신의 침대 나무에서 패턴들을 바라보며 시간을 보내곤 했다.',en:'As a child, _____ in the wood of her bed.',ws:['she would spend','time staring at','the patterns'],a:'she would spend time staring at the patterns'},
+  {n:'90',t:'g',prev:'She would spend time staring at the patterns in the wood of her bed, trying to find different animal shapes.',en:'She admits that even today she stares at things longer than [A] acceptable in society.',blanks:[{l:'[A]',c:['is','are'],a:'is'}]},
+  {n:'91',t:'g',prev:'As a child, she would spend time staring at the patterns in the wood of her bed,',en:'As a child, she would spend time staring at the patterns in the wood of her bed, [A] to find different animal shapes.',blanks:[{l:'[A]',c:['trying','tried'],a:'trying'}]},
+  {n:'92',t:'b',prev:'She admits that even today she',en:'She admits that even today she _____ _____ things longer than is acceptable in society.',a:'stares at'},
+  {n:'93',t:'o',prev:'She admits that even today she stares at things longer than is acceptable in society.',ko:'이러한 예리한 관찰력이 그녀가 창의적이고 상상력이 풍부한 예술 작품들을 계속해서 만들어낼 수 있게 하는 것이다.',en:'_____.',ws:['This keen observation','is what enables her','to continuously produce','creative and imaginative','works of art'],a:'This keen observation is what enables her to continuously produce creative and imaginative works of art'},
+  {n:'94',t:'w',prev:'She admits that even today she stares at things longer than is acceptable in society.',en:'Creativity is not some kind of _____ skill.',ws:['average','outstanding','remarkable','exceptional'],a:'average'},
+  {n:'95',t:'g',prev:'Creativity is not some kind of average skill',en:'Creativity is not some kind of average skill [A] belongs to exclusive groups of people.',blanks:[{l:'[A]',c:['who','that'],a:'that'}]},
+  {n:'96',t:'g',prev:'Creativity is not some kind of average skill that',en:'Creativity is not some kind of average skill that [A] to exclusive groups of people.',blanks:[{l:'[A]',c:['belong','belongs'],a:'belongs'}]},
+  {n:'97',t:'g',prev:'Creativity is not some kind of average skill that belongs to',en:'It is not some kind of average skill that belongs to [A] groups of people.',blanks:[{l:'[A]',c:['inclusive','exclusive'],a:'exclusive'}]},
+  {n:'98',t:'g',prev:'Creativity is not some kind of average skill that belongs to exclusive groups of people.',en:'It is actually a part of our daily lives, a power [A] we can display anytime we choose to.',blanks:[{l:'[A]',c:['that','whose'],a:'that'}]},
+  {n:'99',t:'g',prev:'It is actually a part of our daily lives, a power that we can display anytime we choose to.',en:'[A] we realize it or not, we are constantly using our creativity.',blanks:[{l:'[A]',c:['That','Whether'],a:'Whether'}]},
+  {n:'100',t:'w',prev:'Whether we realize it or not, we are',en:'Whether we realize it or not, we are _____ using our creativity.',ws:['occasionally','continually','constantly'],a:'occasionally'},
+  {n:'101',t:'g',prev:'Whether we realize it or not, we are constantly',en:'Whether we realize it or not, we are constantly [A] our creativity.',blanks:[{l:'[A]',c:['using','used'],a:'using'}]},
+  {n:'102',t:'g',prev:'Whether we realize it or not, we are constantly using our creativity to',en:'We are constantly using our creativity to [A].',blanks:[{l:'[A]',c:['adapt','adopt'],a:'adapt'}]},
+  {n:'103',t:'g',prev:'We are constantly using our creativity to adapt,',en:'We are constantly using our creativity to adapt, [A], and rearrange the things around us.',blanks:[{l:'[A]',c:['adjust','adjusting'],a:'adjust'}]},
+  {n:'104',t:'g',prev:'We are constantly using our creativity to adapt, adjust, and',en:'We are constantly using our creativity to adapt, adjust, and [A] the things around us.',blanks:[{l:'[A]',c:['rearrange','rearranging'],a:'rearrange'}]},
+  {n:'105',t:'o',prev:'We are constantly using our creativity to adapt, adjust, and rearrange the things around us.',ko:'그렇게 함으로써',en:'_____, we are turning the ordinary into something extraordinary.',ws:['By','doing','so'],a:'By doing so'},
+  {n:'106',t:'o',prev:'By doing so,',ko:'우리는 평범한 것을 특별한 무언가로 바꾸고 있는 중이다.',en:'By doing so, _____—something that has never been seen before.',ws:['we are turning','the ordinary','into something','extraordinary'],a:'we are turning the ordinary into something extraordinary'},
+  {n:'107',t:'g',prev:'By doing so, we are turning the ordinary into something extraordinary—something',en:'Something [A] has never been seen before.',blanks:[{l:'[A]',c:['that','what'],a:'that'}]},
+  {n:'108',t:'g',prev:'Something that',en:'Something that [A] never been seen before.',blanks:[{l:'[A]',c:['have','has'],a:'has'}]},
+  {n:'109',t:'g',prev:'Something that has never',en:'Something that has never [A] before.',blanks:[{l:'[A]',c:['seen','been seen'],a:'been seen'}]},
+  {n:'110',t:'g',prev:'By doing so, we are turning the ordinary into something extraordinary—something that has never been seen before.',en:'[A] a look at the things around you.',blanks:[{l:'[A]',c:['Take','Taking'],a:'Take'}]},
+  {n:'111',t:'o',prev:'Take a look at the things around you, but',ko:'그것들을 그냥 흘깃 보지 마세요.',en:'Take a look at the things around you, but _____.',ws:['don\'t just','give them','a quick glance'],a:'don\'t just give them a quick glance'},
+  {n:'112',t:'g',prev:'Take a look at the things around you, but don\'t just give them a quick glance.',en:'[A] carefully, and you might discover something that stimulates your own imagination and creativity.',blanks:[{l:'[A]',c:['Look','Looking'],a:'Look'}]},
+  {n:'113',t:'g',prev:'Look carefully, and you might discover something',en:'You might discover something [A] stimulates your own imagination and creativity.',blanks:[{l:'[A]',c:['that','whose'],a:'that'}]},
+  {n:'114',t:'w',prev:'Look carefully, and you might discover something that',en:'You might discover something that _____ your own imagination and creativity.',ws:['stimulates','inhibits','sparks','triggers'],a:'inhibits'}
+];
+
+const TOTAL=30, CUTLINE=3;
+const T_G=5,T_B=10,T_O=30,CIRCUM=2*Math.PI*20;
+const STORAGE_KEY='quiz_history_creativity';
+let questions=[],idx=0,answers={},timeouts={},screen='intro';
+let timerSec=5,timerInterval=null,advancing=false;
+let orderPlaced=[],orderAvail=[];
+
+function loadHistory(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch{return[];}}
+function saveHistory(c,t,cl,wi){
+  const h=loadHistory();
+  h.unshift({date:new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),correct:c,total:t,cutline:cl,pct:Math.round((c/t)*100),pass:c>=cl,wrongs:wi});
+  if(h.length>20)h.pop();
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(h));}catch{}
+}
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function getTime(q){return q.t==='o'?T_O:q.t==='b'?T_B:T_G;}
+function start(){questions=shuffle(ALL_Q).slice(0,TOTAL);idx=0;answers={};timeouts={};screen='quiz';advancing=false;initOrder();startTimer();render();}
+function initOrder(){const q=questions[idx];if(q&&q.t==='o'){orderAvail=shuffle([...q.ws]);orderPlaced=[];}}
+function startTimer(){clearInterval(timerInterval);timerSec=getTime(questions[idx]);timerInterval=setInterval(()=>{timerSec--;updateTimerUI();if(timerSec<=0)onTimeout();},1000);}
+function updateTimerUI(){
+  const ring=document.querySelector('.ring-fill'),num=document.querySelector('.timer-num'),wrap=document.querySelector('.tw-inner');
+  if(!ring||!num)return;
+  const mx=getTime(questions[idx]);
+  ring.style.strokeDashoffset=CIRCUM*(1-(timerSec/mx));
+  num.textContent=timerSec;
+  if(wrap)wrap.className='tw-inner'+(timerSec<=Math.ceil(mx*.12)?'td':timerSec<=Math.ceil(mx*.3)?'tw':'');
+}
+function onTimeout(){if(advancing)return;clearInterval(timerInterval);timeouts[idx]=true;answers[idx]='__timeout__';advancing=true;render();setTimeout(()=>{advancing=false;advance();},1300);}
+function advance(){if(idx<TOTAL-1){advancing=false;idx++;initOrder();startTimer();render();}else{clearInterval(timerInterval);screen='result';render();}}
+function isCorrect(q,qi){
+  const a=answers[qi];if(!a||a==='__timeout__')return false;
+  if(q.t==='g')return q.blanks.every((_,bi)=>answers[`${qi}_${bi}`]===q.blanks[bi].a);
+  if(q.t==='b')return a.trim().toLowerCase()===q.a.toLowerCase();
+  if(q.t==='w')return a===q.a;
+  if(q.t==='o')return a.trim().toLowerCase().replace(/[.,!?'"]/g,'')===q.a.trim().toLowerCase().replace(/[.,!?'"]/g,'');
+  return false;
+}
+function scoreQ(){return questions.reduce((c,q,qi)=>isCorrect(q,qi)?c+1:c,0);}
+function tLabel(t){return t==='g'?'어법 선택':t==='b'?'빈칸 완성':'어순 배열';}
+function tCls(t){return t==='g'?'tb-g':t==='b'?'tb-b':'tb-o';}
+function tTime(t){return t==='g'?'5초':t==='b'?'10초':'30초';}
+
+function render(){const app=document.getElementById('app');if(screen==='intro')app.innerHTML=renderIntro();else if(screen==='quiz')app.innerHTML=renderQuiz();else app.innerHTML=renderResult();attachEvents();}
+
+function renderIntro(){
+  const types=['g','b','o'],dots={g:'#185FA5',b:'#6B3FA0',o:'#BA7517'};
+  const hist=loadHistory();
+  const histHtml=hist.length===0?`<div class="hist-empty">아직 풀이 기록이 없어요</div>`
+    :hist.map((h,hi)=>{
+      const wh=(h.wrongs&&h.wrongs.length>0)?h.wrongs.map(w=>`<div class="hd-item ${w.isTO?'hd-to':'hd-ng'}"><div class="hd-qnum">${w.n} &nbsp;<span class="type-badge ${w.tcls}" style="font-size:10px;padding:2px 7px;">${w.tlbl}</span>${w.isTO?' ⏰':''}</div>${w.en?`<div class="hd-en">${w.en}</div>`:''}<div class="hd-tags"><span class="tag tag-ng">${w.isTO?'시간초과':'입력: '+w.ua}</span><span class="tag tag-ok">정답: ${w.ans}</span></div></div>`).join(''):`<div style="font-size:12px;color:var(--hint);text-align:center;padding:8px 0;">오답 없음 🎉</div>`;
+      return `<div class="hist-item" data-hi="${hi}"><div class="hist-top"><div class="hist-left"><div class="hist-date">${h.date}</div><div class="hist-score ${h.pass?'pass':'fail'}">${h.correct} / ${h.total}</div><div class="hist-bar-wrap"><div class="hist-bar" style="width:${h.pct}%;background:${h.pass?'var(--green)':'var(--red)'}"></div></div><div class="hist-pct">정답률 ${h.pct}%</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><span class="hist-badge ${h.pass?'hb-pass':'hb-fail'}">${h.pass?'합격':'불합격'}</span><span style="font-size:11px;color:var(--muted);" class="hist-toggle-txt">오답 보기 ▼</span></div></div><div class="hist-detail" id="hd-${hi}">${wh}</div></div>`;
+    }).join('');
+  return `<div class="intro-box">
+  <div class="intro-logo">수능형 지문</div>
+  <div class="intro-title">Seeing the Extraordinary in the Ordinary</div>
+  <div class="intro-sub">평범한 것에서 비상한 것을 발견하기 · 복합유형 (114문항 → 랜덤 30문항)</div>
+  <div class="type-legend">${types.map(t=>`<span class="type-badge ${tCls(t)}">${tLabel(t)}</span>`).join('')}</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="info-num">${TOTAL}</div><div class="info-lbl">전체 문항</div></div>
+    <div class="info-card"><div class="info-num">${CUTLINE}개</div><div class="info-lbl">합격 커트라인</div></div>
+    <div class="info-card"><div class="info-num">3가지</div><div class="info-lbl">문제 유형</div></div>
+  </div>
+  <div class="time-grid">${types.map(t=>`<div class="time-card"><div class="time-dot" style="background:${dots[t]}"></div><div><div class="time-lbl">${tLabel(t)}</div><div class="time-val">제한 ${tTime(t)}</div></div></div>`).join('')}</div>
+  <button class="start-btn" id="start-btn">시작하기</button>
+  <div class="hist-section"><div class="hist-title"><span>📋 이전 풀이 기록 (최대 20회)</span>${hist.length>0?`<button class="hist-clear" id="hist-clear">기록 삭제</button>`:''}</div>${histHtml}</div>
+</div>`;
+}
+
+function renderQuiz(){
+  const q=questions[idx],mx=getTime(q),pct=Math.round((idx/TOTAL)*100);
+  const offset=CIRCUM*(1-(timerSec/mx)),twCls=timerSec<=Math.ceil(mx*.12)?'td':timerSec<=Math.ceil(mx*.3)?'tw':'';
+  const isTO=timeouts[idx];
+  let enHtml=q.en||'';
+  if(q.t==='g'&&q.blanks)q.blanks.forEach(b=>{enHtml=enHtml.replace(b.l,`<span class="blank-tag">${b.l}</span>`);});
+  const curBi=q.t==='g'?q.blanks.findIndex((_,bi)=>answers[`${idx}_${bi}`]===undefined):-1;
+  const b=curBi>=0?q.blanks[curBi]:null;
+  let body='';
+  if(isTO){
+    const ans=q.t==='g'?q.blanks.map(x=>x.a).join(' / '):q.a;
+    body=`<div class="timeout-msg">⏰ 시간 초과! &nbsp;정답: <strong>${ans}</strong></div>`;
+  } else if(q.t==='g'&&b){
+    body=`<div class="q-sub">${b.l} 중 알맞은 것은?</div><div class="choices">${b.c.map(c=>`<button class="choice-btn" data-t="g" data-bi="${curBi}" data-ch="${c}">${c}</button>`).join('')}</div>`;
+  } else if(q.t==='b'&&!answers[idx]){
+    const prevHtmlB=q.prev?`<div style="font-size:13px;color:var(--muted);background:var(--bg);border-radius:var(--rs);padding:8px 12px;margin-bottom:10px;line-height:1.6;border-left:3px solid var(--green)"><span style="font-size:10px;font-weight:800;color:var(--green);display:block;margin-bottom:2px">앞 문장</span>${q.prev}</div>`:'';
+    body=`${prevHtmlB}<div class="blank-input-wrap"><input class="blank-input" id="blank-inp" type="text" placeholder="영어로 입력하세요" autocomplete="off" autocorrect="off" spellcheck="false"><button class="submit-btn" id="blank-sub">확인</button></div>`;
+  } else if(q.t==='b'&&answers[idx]){
+    const ok=answers[idx].trim().toLowerCase()===q.a.toLowerCase();
+    body=`<div class="answer-reveal ${ok?'ar-ok':'ar-ng'}">${ok?'✓ 정답입니다!':'✗ 오답 — 정답: <strong>'+q.a+'</strong>'}</div>`;
+  } else if(q.t==='o'&&!answers[idx]){
+    const ph=orderPlaced.length>0?orderPlaced.map((w,i)=>`<span class="word-chip wc-placed" data-pi="${i}">${w}</span>`).join(''):`<span style="font-size:12px;color:var(--hint)">단어를 클릭해서 순서대로 배열하세요</span>`;
+    const ah=orderAvail.map((w,i)=>`<span class="word-chip wc-avail" data-ai="${i}">${w}</span>`).join('');
+    const prevHtml=q.prev?`<div style="font-size:13px;color:var(--muted);background:var(--bg);border-radius:var(--rs);padding:8px 12px;margin-bottom:10px;line-height:1.6;border-left:3px solid var(--green)"><span style="font-size:10px;font-weight:800;color:var(--green);display:block;margin-bottom:2px">앞 문장</span>${q.prev}</div>`:'';
+    body=`${prevHtml}<div class="order-area-lbl">배열 순서</div><div class="order-area ${orderPlaced.length>0?'filled':''}">${ph}</div><div class="order-area-lbl" style="margin-top:10px;">단어 목록</div><div class="order-area">${ah}</div><button class="order-check-btn" id="order-check" ${orderPlaced.length===0?'disabled':''}>정답 확인</button>`;
+  } else if(q.t==='o'&&answers[idx]){
+    const ok=isCorrect(q,idx);
+    body=`<div class="answer-reveal ${ok?'ar-ok':'ar-ng'}">${ok?'✓ 정답입니다!':'✗ 오답 — 정답: <strong>'+q.a+'</strong>'}</div>`;
+  } else if(q.t==='w'&&!answers[idx]){
+    body=`<div class="q-sub">알맞지 않은 것을 고르세요</div><div class="choices">${q.ws.map(c=>`<button class="choice-btn" data-t="w" data-bi="0" data-ch="${c}">${c}</button>`).join('')}</div>`;
+  } else if(q.t==='w'&&answers[idx]){
+    const ok=isCorrect(q,idx);
+    body=`<div class="answer-reveal ${ok?'ar-ok':'ar-ng'}">${ok?'✓ 정답입니다!':'✗ 오답 — 정답: <strong>'+q.a+'</strong>'}</div>`;
+  }
+  return `<div class="hd-row"><div class="quiz-counter">문항 ${idx+1} / ${TOTAL}</div><div class="cutline-chip">커트라인 ${CUTLINE}개</div></div>
+<div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+<div class="timer-row"><div class="timer-block"><div class="timer-lbl">남은시간</div>
+<div class="tw-inner ${twCls}"><div class="timer-ring"><svg width="52" height="52" viewBox="0 0 52 52"><circle class="ring-bg" cx="26" cy="26" r="20"/><circle class="ring-fill" cx="26" cy="26" r="20" stroke-dasharray="${CIRCUM}" stroke-dashoffset="${offset}"/></svg><div class="timer-num">${timerSec}</div></div></div></div></div>
+<div class="q-card">
+  <div class="q-num">${q.n} &nbsp;<span class="type-badge ${tCls(q.t)}">${tLabel(q.t)}</span></div>
+  ${enHtml?`<div class="q-en">${enHtml}</div>`:''}
+  ${q.t==='o'?`<div class="q-sub">단어를 올바른 순서로 배열하세요</div>`:''}
+  ${body}
+</div>`;
+}
+
+function renderResult(){
+  const correct=scoreQ(),toCount=Object.keys(timeouts).length,pass=correct>=CUTLINE;
+  const pct=Math.round((correct/TOTAL)*100),emoji=pass?(correct===TOTAL?'🎉':'👍'):(correct>=Math.ceil(TOTAL*.7)?'💪':'📚');
+  const wrongIdxs=questions.map((_,qi)=>qi).filter(qi=>!isCorrect(questions[qi],qi));
+  const wrongItems=wrongIdxs.map(qi=>{
+    const q=questions[qi],isTO=!!timeouts[qi];
+    const ans=q.t==='g'?q.blanks.map(x=>x.a).join(' / '):q.a;
+    const ua=q.t==='g'?q.blanks.map((_,bi)=>{const s=answers[`${qi}_${bi}`];return(!s||s==='__timeout__')?'시간초과':s;}).join(' / '):(!answers[qi]||answers[qi]==='__timeout__'?'시간초과':answers[qi]);
+    return{n:q.n,t:q.t,tlbl:tLabel(q.t),tcls:tCls(q.t),en:q.en||'',ans,ua,isTO};
+  });
+  saveHistory(correct,TOTAL,CUTLINE,wrongItems);
+  return `<div class="result-card"><div class="result-emoji">${emoji}</div><div class="result-score ${pass?'score-pass':'score-fail'}">${correct} / ${TOTAL}</div><div class="result-badge ${pass?'badge-pass':'badge-fail'}">${pass?'합격 ✓':'불합격 ✗'} · 커트라인 ${CUTLINE}개</div><div class="result-pct">정답률 ${pct}%</div><div class="stat-row"><div class="stat-card"><div class="stat-num s-ok">${correct}</div><div class="stat-lbl">정답</div></div><div class="stat-card"><div class="stat-num s-ng">${TOTAL-correct-toCount}</div><div class="stat-lbl">오답</div></div><div class="stat-card"><div class="stat-num s-to">${toCount}</div><div class="stat-lbl">시간초과</div></div></div><button class="retry-btn" id="retry-btn">다시 풀기</button></div>
+${wrongIdxs.length>0?`<div class="review-title">오답 목록 (${wrongIdxs.length}개)</div>${wrongIdxs.map(qi=>{const q=questions[qi],isTO=!!timeouts[qi];const ans=q.t==='g'?q.blanks.map(x=>x.a).join(' / '):q.a;const ua=q.t==='g'?q.blanks.map((_,bi)=>{const s=answers[`${qi}_${bi}`];return(!s||s==='__timeout__')?'시간초과':s;}).join(' / '):(!answers[qi]||answers[qi]==='__timeout__'?'시간초과':answers[qi]);return `<div class="review-item ${isTO?'to':''}"><div class="r-num">${q.n} &nbsp;<span class="type-badge ${tCls(q.t)}">${tLabel(q.t)}</span>${isTO?' ⏰':''}</div>${q.en?`<div class="r-en">${q.en}</div>`:''}<span class="tag ${isTO?'tag-to':'tag-ng'}">${isTO?'시간초과':'입력: '+ua}</span><span class="tag tag-ok">정답: ${ans}</span></div>`;}).join('')}`:`<div style="text-align:center;color:var(--green);font-weight:800;padding:20px;font-size:15px;">전 문항 정답! 완벽합니다 🎉</div>`}`;
+}
+
+function attachEvents(){
+  const app=document.getElementById('app');
+  const s=app.querySelector('#start-btn');if(s)s.addEventListener('click',start);
+  const r=app.querySelector('#retry-btn');if(r)r.addEventListener('click',start);
+  const hc=app.querySelector('#hist-clear');if(hc)hc.addEventListener('click',()=>{try{localStorage.removeItem(STORAGE_KEY);}catch{}render();});
+  app.querySelectorAll('.hist-item').forEach(item=>{
+    item.addEventListener('click',e=>{
+      if(e.target.closest('#hist-clear'))return;
+      const hi=item.dataset.hi,detail=document.getElementById('hd-'+hi);if(!detail)return;
+      const isOpen=detail.classList.contains('open');
+      app.querySelectorAll('.hist-detail').forEach(d=>d.classList.remove('open'));
+      app.querySelectorAll('.hist-toggle-txt').forEach(t=>{t.textContent='오답 보기 ▼';});
+      if(!isOpen){detail.classList.add('open');const txt=item.querySelector('.hist-toggle-txt');if(txt)txt.textContent='닫기 ▲';}
+    });
+  });
+  app.querySelectorAll('.choice-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    const t=btn.dataset.t,ch=btn.dataset.ch;
+    if(t==='g'){
+      const bi=parseInt(btn.dataset.bi),key=`${idx}_${bi}`;
+      if(answers[key]!==undefined||advancing)return;
+      clearInterval(timerInterval);advancing=true;
+      const cor=questions[idx].blanks[bi].a;answers[key]=ch;answers[idx]=ch;
+      const ok=ch===cor;btn.classList.add(ok?'correct':'wrong');
+      btn.parentElement.querySelectorAll('.choice-btn').forEach(b2=>{b2.disabled=true;if(!ok&&b2.dataset.ch===cor)b2.classList.add('correct');});
+      const nb=questions[idx].blanks.findIndex((_,i)=>answers[`${idx}_${i}`]===undefined);
+      setTimeout(()=>{if(nb>=0){advancing=false;clearInterval(timerInterval);timerSec=T_G;startTimer();render();}else{advancing=false;advance();}},ok?400:800);
+    } else if(t==='w'){
+      if(answers[idx]!==undefined||advancing)return;
+      clearInterval(timerInterval);advancing=true;
+      const ok=ch===questions[idx].a;
+      answers[idx]=ch;
+      btn.classList.add(ok?'correct':'wrong');
+      btn.parentElement.querySelectorAll('.choice-btn').forEach(b2=>{b2.disabled=true;if(!ok&&b2.dataset.ch===questions[idx].a)b2.classList.add('correct');});
+      setTimeout(()=>{advancing=false;advance();},ok?400:800);
+    }
+  }));
+  const bi=app.querySelector('#blank-inp'),bs=app.querySelector('#blank-sub');
+  if(bi&&bs){
+    const doSub=()=>{
+      const val=bi.value.trim();if(!val||advancing)return;
+      clearInterval(timerInterval);advancing=true;answers[idx]=val;
+      const ok=val.toLowerCase()===questions[idx].a.toLowerCase();
+      bi.classList.add(ok?'correct':'wrong');bi.disabled=true;bs.disabled=true;
+      const fb=document.createElement('div');fb.className=`answer-reveal ${ok?'ar-ok':'ar-ng'}`;
+      fb.innerHTML=ok?'✓ 정답입니다!':'✗ 오답 — 정답: <strong>'+questions[idx].a+'</strong>';
+      bs.parentElement.parentElement.appendChild(fb);
+      setTimeout(()=>{advancing=false;advance();},ok?600:1100);
+    };
+    bs.addEventListener('click',doSub);bi.addEventListener('keydown',e=>{if(e.key==='Enter')doSub();});setTimeout(()=>bi.focus(),80);
+  }
+  app.querySelectorAll('.wc-placed').forEach(chip=>chip.addEventListener('click',()=>{const i=parseInt(chip.dataset.pi);orderAvail.push(orderPlaced[i]);orderPlaced.splice(i,1);render();}));
+  app.querySelectorAll('.wc-avail').forEach(chip=>chip.addEventListener('click',()=>{const i=parseInt(chip.dataset.ai);orderPlaced.push(orderAvail[i]);orderAvail.splice(i,1);render();}));
+  const oc=app.querySelector('#order-check');
+  if(oc)oc.addEventListener('click',()=>{
+    if(orderPlaced.length===0||advancing)return;
+    clearInterval(timerInterval);advancing=true;
+    const ua=orderPlaced.join(' ');answers[idx]=ua;
+    const ok=isCorrect(questions[idx],idx);
+    const fb=document.createElement('div');fb.className=`answer-reveal ${ok?'ar-ok':'ar-ng'}`;
+    fb.innerHTML=ok?'✓ 정답입니다!':'✗ 오답 — 정답: <strong>'+questions[idx].a+'</strong>';
+    oc.parentElement.appendChild(fb);oc.disabled=true;
+    app.querySelectorAll('.word-chip').forEach(c=>c.style.pointerEvents='none');
+    setTimeout(()=>{advancing=false;advance();},ok?600:1200);
+  });
+}
+render();
+</script>
+</body>
+</html>
